@@ -1,10 +1,18 @@
 name: "CodeQL Analysis"
 
+# Da permisos al workflow para reportar alertas de seguridad a GitHub Security
+permissions:
+  contents: read
+  security-events: write
+
 on:
+  # Ejecuta el workflow al hacer push a la rama master
   push:
-    branches: [ main ]
+    branches: [ master ]
+  # Ejecuta también en cada Pull Request a master
   pull_request:
-    branches: [ main ]
+    branches: [ master ]
+  # Ejecuta diariamente a la 1:00 UTC (programado)
   schedule:
     - cron: '0 1 * * *'
 
@@ -12,18 +20,31 @@ jobs:
   analyze:
     name: Analyze (CodeQL)
     runs-on: ubuntu-latest
+
     steps:
-    - uses: actions/checkout@v3
+      # Paso 1: Descarga el código de tu repo al runner de GitHub Actions
+      - uses: actions/checkout@v3
 
-    - name: Initialize CodeQL
-      uses: github/codeql-action/init@v2
-      with:
-        languages: javascript
+      # Paso 2: (Opcional pero útil para depuración)
+      # Muestra en el log la versión de Node.js y npm
+      - name: Check Node & NPM versions
+        run: |
+          node -v
+          npm -v
 
-    - name: Build the code
-      run: |
-        npm install
-        npm run build
+      # Paso 3: Inicializa CodeQL para analizar JavaScript
+      - name: Initialize CodeQL
+        uses: github/codeql-action/init@v3
+        with:
+          languages: javascript    # Tu proyecto usa React, por eso JavaScript
 
-    - name: Perform CodeQL Analysis
-      uses: github/codeql-action/analyze@v2
+      # Paso 4: Instala dependencias y compila la app
+      # Usamos --force para forzar la instalación aunque haya conflictos de dependencias
+      - name: Build the code
+        run: |
+          npm install --force          # Fuerza la instalación de todas las dependencias
+          npm run build                # Construye la app de React
+
+      # Paso 5: Ejecuta el análisis estático de CodeQL y reporta las alertas
+      - name: Perform CodeQL Analysis
+        uses: github/codeql-action/analyze@v3
