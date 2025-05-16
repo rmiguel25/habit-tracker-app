@@ -177,3 +177,4 @@ In the project directory, you can run:
 - npm run eject
 
 For the detailed description of available scripts see [CRA Documentation](https://create-react-app.dev/docs/available-scripts)
+<!-- Prueba para lanzar workflow de CodeQL -->
