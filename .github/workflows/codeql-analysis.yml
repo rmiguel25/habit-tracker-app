@@ -1,0 +1,42 @@
+name: "CodeQL Analysis"
+
+# Da permiso al workflow para reportar resultados de seguridad (¡IMPORTANTE!)
+permissions:
+  contents: read
+  security-events: write
+
+on:
+  # Ejecuta el workflow en cada push a la rama master
+  push:
+    branches: [ master ]
+  # También en cada pull request a la rama master
+  pull_request:
+    branches: [ master ]
+  # Y además, programa un escaneo diario (a la 1:00 UTC)
+  schedule:
+    - cron: '0 1 * * *'
+
+jobs:
+  analyze:
+    name: Analyze (CodeQL)
+    runs-on: ubuntu-latest
+
+    steps:
+      # 1. Descarga el código de tu repo en el runner
+      - uses: actions/checkout@v3
+
+      # 2. Inicializa CodeQL para analizar JavaScript
+      - name: Initialize CodeQL
+        uses: github/codeql-action/init@v3
+        with:
+          languages: javascript    # Usa 'javascript' porque tu proyecto es React
+
+      # 3. Instala dependencias y construye la app
+      - name: Build the code
+        run: |
+          npm install            # Instala dependencias de package.json
+          npm run build          # Construye la app (usa react-scripts)
+
+      # 4. Lanza el análisis de CodeQL
+      - name: Perform CodeQL Analysis
+        uses: github/codeql-action/analyze@v3
