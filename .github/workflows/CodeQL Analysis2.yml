@@ -1,0 +1,48 @@
+name: "CodeQL Analysis"
+
+# Permisos necesarios para que el workflow pueda subir alertas a la pestaña Security
+permissions:
+  contents: read
+  security-events: write
+
+on:
+  # Ejecuta el workflow cada vez que hay un push a la rama master
+  push:
+    branches: [ master ]
+  # Ejecuta también en cada Pull Request dirigido a la rama master
+  pull_request:
+    branches: [ master ]
+  # Ejecuta automáticamente una vez al día, a la 1:00 UTC
+  schedule:
+    - cron: '0 1 * * *'
+
+jobs:
+  analyze:
+    name: Analyze (CodeQL)       # Nombre del job en el workflow
+    runs-on: ubuntu-latest       # Utiliza el runner Ubuntu más reciente
+
+    steps:
+      # Paso 1: Clona tu repositorio en el runner
+      - uses: actions/checkout@v3
+
+      # Paso 2: Muestra en el log la versión de Node.js y npm (útil para depuración)
+      - name: Check Node & NPM versions
+        run: |
+          node -v
+          npm -v
+
+      # Paso 3: Inicializa CodeQL y especifica el lenguaje JavaScript.
+      - name: Initialize CodeQL
+        uses: github/codeql-action/init@v3
+        with:
+          languages: javascript    # Tu proyecto usa React, así que JavaScript
+
+      # Paso 4: Instala las dependencias (usando --legacy-peer-deps para evitar conflictos) y compila la app
+      - name: Build the code
+        run: |
+          npm install --legacy-peer-deps    # ← CLAVE: evita el error ERESOLVE
+          npm run build
+
+      # Paso 5: Realiza el análisis de seguridad de CodeQL y sube resultados a GitHub Security
+      - name: Perform CodeQL Analysis
+        uses: github/codeql-action/analyze@v3
