@@ -1,19 +1,19 @@
 # Raúl Miguel Tarea 3
 name: "CodeQL Analysis"
 
-# Permisos necesarios para que CodeQL pueda reportar alertas a GitHub Security
+# Da permisos al workflow para reportar alertas de seguridad a GitHub Security
 permissions:
   contents: read
   security-events: write
 
 on:
-  # Ejecuta el workflow cada vez que hay un push a la rama master
+  # Ejecuta el workflow al hacer push a la rama master
   push:
     branches: [ master ]
-  # También ejecuta en cada pull request contra la rama master
+  # Ejecuta también en cada Pull Request a master
   pull_request:
     branches: [ master ]
-  # Y además, lo programa para que corra diariamente a la 1:00 UTC
+  # Ejecuta diariamente a la 1:00 UTC (programado)
   schedule:
     - cron: '0 1 * * *'
 
@@ -23,18 +23,29 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      # Paso 1: Descarga el código del repositorio en el runner de GitHub Actions
+      # Paso 1: Descarga el código de tu repo al runner de GitHub Actions
       - uses: actions/checkout@v3
 
-      # Paso 2: Inicializa CodeQL y selecciona el lenguaje
+      # Paso 2: (Opcional pero útil para depuración)
+      # Muestra en el log la versión de Node.js y npm
+      - name: Check Node & NPM versions
+        run: |
+          node -v
+          npm -v
+
+      # Paso 3: Inicializa CodeQL para analizar JavaScript
       - name: Initialize CodeQL
         uses: github/codeql-action/init@v3
         with:
-          languages: javascript  # Tu proyecto usa React, así que el lenguaje es JavaScript
+          languages: javascript    # Tu proyecto usa React, por eso JavaScript
 
-      # Paso 3: Instala las dependencias y compila la app
-      # Usamos --legacy-peer-deps para evitar errores de dependencias como el tuyo
+      # Paso 4: Instala dependencias y compila la app
+      # Usamos --force para forzar la instalación aunque haya conflictos de dependencias
       - name: Build the code
         run: |
-          npm install --legacy-peer-deps   # Evita conflictos entre versiones antiguas de dependencias
-          npm run build                    # Compila la app de React (esto u
+          npm install --force          # Fuerza la instalación de todas las dependencias
+          npm run build                # Construye la app de React
+
+      # Paso 5: Ejecuta el análisis estático de CodeQL y reporta las alertas
+      - name: Perform CodeQL Analysis
+        uses: github/codeql-action/analyze@v3
