@@ -37,6 +37,9 @@
     "react-swipeable-views": "^0.13.9",
     "web-vitals": "^0.2.4",
     "yup": "^0.29.3"
+  // otras dependencias...
+  "lodash": "4.17.11",
+  // más dependencias...    
   },
   "scripts": {
     "start": "react-scripts start",
