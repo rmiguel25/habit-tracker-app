@@ -1,19 +1,19 @@
 # Raúl Miguel Tarea 3
 name: "CodeQL Analysis"
 
-# Da permisos al workflow para reportar alertas de seguridad a GitHub Security
+# Permisos necesarios para reportar resultados de seguridad a GitHub Security
 permissions:
   contents: read
   security-events: write
 
 on:
-  # Ejecuta el workflow al hacer push a la rama master
+  # Ejecuta el workflow en cada push a la rama master
   push:
     branches: [ master ]
-  # Ejecuta también en cada Pull Request a master
+  # Ejecuta también en cada pull request a master
   pull_request:
     branches: [ master ]
-  # Ejecuta diariamente a la 1:00 UTC (programado)
+  # Programa una ejecución diaria automática (1:00 UTC)
   schedule:
     - cron: '0 1 * * *'
 
@@ -23,30 +23,28 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      # Paso 1: Descarga el código de tu repo al runner de GitHub Actions
+      # 1. Descarga tu código en el runner de GitHub Actions
       - uses: actions/checkout@v3
 
-      # Paso 2: (Opcional pero útil para depuración)
-      # Muestra en el log la versión de Node.js y npm
+      # 2. (Opcional) Muestra la versión de Node.js y npm en el log, útil para depuración
       - name: Check Node & NPM versions
         run: |
           node -v
           npm -v
 
-      # Paso 3: Inicializa CodeQL para analizar JavaScript
+      # 3. Inicializa CodeQL para JavaScript (React)
       - name: Initialize CodeQL
         uses: github/codeql-action/init@v3
         with:
-          languages: javascript    # Tu proyecto usa React, por eso JavaScript
+          languages: javascript
 
-      # Paso 4: Instala dependencias y compila la app
-      # Usamos --force para forzar la instalación aunque haya conflictos de dependencias
-- name: Build the code
-  run: |
-    npm install --legacy-peer-deps
-    npm run build
+      # 4. Instala dependencias y construye el proyecto
+      # Usa --legacy-peer-deps para saltar los conflictos de dependencias
+      - name: Build the code
+        run: |
+          npm install --legacy-peer-deps    # ← ¡LA CLAVE para evitar el error!
+          npm run build
 
-
-      # Paso 5: Ejecuta el análisis estático de CodeQL y reporta las alertas
+      # 5. Ejecuta el análisis estático de seguridad
       - name: Perform CodeQL Analysis
         uses: github/codeql-action/analyze@v3
