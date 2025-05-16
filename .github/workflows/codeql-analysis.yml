@@ -44,6 +44,6 @@ jobs:
           npm install --legacy-peer-deps    # ← ¡LA CLAVE para evitar el error!
           npm run build
 
-      # 5. Ejecuta el análisis estático de seguridad
+      # 5. Ejecuta el análisis estático de seguridad.
       - name: Perform CodeQL Analysis
         uses: github/codeql-action/analyze@v3
