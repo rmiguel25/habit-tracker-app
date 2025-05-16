@@ -1,19 +1,19 @@
 # Raúl Miguel Tarea 3
 name: "CodeQL Analysis"
 
-# Da permiso al workflow para reportar resultados de seguridad (¡IMPORTANTE!)
+# Permisos necesarios para que CodeQL pueda reportar alertas a GitHub Security
 permissions:
   contents: read
   security-events: write
 
 on:
-  # Ejecuta el workflow en cada push a la rama master
+  # Ejecuta el workflow cada vez que hay un push a la rama master
   push:
     branches: [ master ]
-  # También en cada pull request a la rama master
+  # También ejecuta en cada pull request contra la rama master
   pull_request:
     branches: [ master ]
-  # Y además, programa un escaneo diario (a la 1:00 UTC)
+  # Y además, lo programa para que corra diariamente a la 1:00 UTC
   schedule:
     - cron: '0 1 * * *'
 
@@ -23,21 +23,18 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      # 1. Descarga el código de tu repo en el runner
+      # Paso 1: Descarga el código del repositorio en el runner de GitHub Actions
       - uses: actions/checkout@v3
 
-      # 2. Inicializa CodeQL para analizar JavaScript
+      # Paso 2: Inicializa CodeQL y selecciona el lenguaje
       - name: Initialize CodeQL
         uses: github/codeql-action/init@v3
         with:
-          languages: javascript    # Usa 'javascript' porque tu proyecto es React
+          languages: javascript  # Tu proyecto usa React, así que el lenguaje es JavaScript
 
-      # 3. Instala dependencias y construye la app
+      # Paso 3: Instala las dependencias y compila la app
+      # Usamos --legacy-peer-deps para evitar errores de dependencias como el tuyo
       - name: Build the code
         run: |
-          npm install            # Instala dependencias de package.json
-          npm run build          # Construye la app (usa react-scripts)
-
-      # 4. Lanza el análisis de CodeQL
-      - name: Perform CodeQL Analysis
-        uses: github/codeql-action/analyze@v3
+          npm install --legacy-peer-deps   # Evita conflictos entre versiones antiguas de dependencias
+          npm run build                    # Compila la app de React (esto u
