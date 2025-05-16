@@ -41,10 +41,11 @@ jobs:
 
       # Paso 4: Instala dependencias y compila la app
       # Usamos --force para forzar la instalación aunque haya conflictos de dependencias
-      - name: Build the code
-        run: |
-          npm install --force          # Fuerza la instalación de todas las dependencias
-          npm run build                # Construye la app de React
+- name: Build the code
+  run: |
+    npm install --legacy-peer-deps
+    npm run build
+
 
       # Paso 5: Ejecuta el análisis estático de CodeQL y reporta las alertas
       - name: Perform CodeQL Analysis
