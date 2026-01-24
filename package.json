@@ -23,7 +23,7 @@
     "firebase": "^8.0.0",
     "fontsource-roboto": "^3.1.5",
     "history": "^5.0.0",
-    "lodash": "^4.17.20",
+    "lodash": "^4.17.23",
     "mdi-material-ui": "^6.20.0",
     "react": "^17.0.1",
     "react-dom": "^17.0.1",
